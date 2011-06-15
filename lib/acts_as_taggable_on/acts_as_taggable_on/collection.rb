@@ -51,7 +51,7 @@ module ActsAsTaggableOn::Taggable
       #                       * :at_most    - Exclude tags with a frequency greater than the given value
       #                       * :on         - Scope the find to only include a certain context
       def all_tag_counts(options = {})
-        options.assert_valid_keys :start_at, :end_at, :conditions, :at_least, :at_most, :order, :limit, :on, :id
+        options.assert_valid_keys :start_at, :end_at, :conditions, :at_least, :at_most, :order, :limit, :on, :id, :site_id
 
         scope = if ActiveRecord::VERSION::MAJOR >= 3
                   {}
@@ -66,6 +66,7 @@ module ActsAsTaggableOn::Taggable
         end_at_conditions   = sanitize_sql(["#{ActsAsTaggableOn::Tagging.table_name}.created_at <= ?", options.delete(:end_at)])   if options[:end_at]
         
         taggable_conditions  = sanitize_sql(["#{ActsAsTaggableOn::Tagging.table_name}.taggable_type = ?", base_class.name])
+        taggable_conditions << sanitize_sql([" AND #{ActsAsTaggableOn::Tagging.table_name}.site_id = ?", options.delete(:site_id)])  if options[:site_id]
         taggable_conditions << sanitize_sql([" AND #{ActsAsTaggableOn::Tagging.table_name}.taggable_id = ?", options.delete(:id)])  if options[:id]
         taggable_conditions << sanitize_sql([" AND #{ActsAsTaggableOn::Tagging.table_name}.context = ?", options.delete(:on).to_s]) if options[:on]
         

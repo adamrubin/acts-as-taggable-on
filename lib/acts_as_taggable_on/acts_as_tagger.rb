@@ -49,7 +49,7 @@ module ActsAsTaggableOn
         raise "You need to specify some tags using :with"                  unless opts.has_key?(:with)
         raise "No context :#{opts[:on]} defined in #{taggable.class.to_s}" unless (opts[:force] || taggable.tag_types.include?(opts[:on]))
 
-        taggable.set_owner_tag_list_on(self, opts[:on].to_s, opts[:with])
+        taggable.set_owner_tag_list_on(self, opts[:on].to_s, opts[:with], opts[:site_id])
         taggable.save
       end
 

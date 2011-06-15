@@ -73,6 +73,7 @@ module ActsAsTaggableOn::Taggable
         joins = []
         conditions = []
 
+        site_id = options.delete(:site_id)
         context = options.delete(:on)
 
         if options.delete(:exclude)
@@ -108,6 +109,9 @@ module ActsAsTaggableOn::Taggable
                             " AND #{taggings_alias}.taggable_type = #{quote_value(base_class.name)}" +
                             " AND #{taggings_alias}.tag_id = #{tag.id}"
             tagging_join << " AND " + sanitize_sql(["#{taggings_alias}.context = ?", context.to_s]) if context
+
+            conditions << sanitize_sql(["#{taggings_alias}.site_id = ?", site_id])
+
 
             joins << tagging_join
           end
@@ -154,6 +158,10 @@ module ActsAsTaggableOn::Taggable
 
       def add_custom_context(value)
         custom_contexts << value.to_s unless custom_contexts.include?(value.to_s) or self.class.tag_types.map(&:to_s).include?(value.to_s)
+      end
+
+      def add_site_id(value)
+        site_id << value
       end
 
       def cached_tag_list_on(context)
